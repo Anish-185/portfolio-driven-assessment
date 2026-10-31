@@ -52,6 +52,7 @@ export default function Assistant() {
         <div className="grid ai-grid">
           <div className="ai-intro">
             <Words className="h2" text="An oracle that answers in *hints,* never in solutions." />
+            <p className="lede">Apollo&apos;s oracle at Delphi never handed anyone an answer. Neither does ours.</p>
             <p>
               On Adept and Master the candidate can ask for hints. Requests that try to pull out the answer are blocked
               by input rules before any model sees them, and replies are checked for similarity to the reference before
@@ -93,9 +94,9 @@ export default function Assistant() {
           </div>
           <div className="voice-text">
             <Chip s="planned">Coming soon: P4.7–P4.11</Chip>
-            <Words as="h3" className="h2 voice-title" text="Then the oracle *speaks:* a short voice interview about their own code." />
+            <Words as="h3" className="h2 voice-title" text="Then *Athena* speaks: a short voice interview about their own code." />
             <p>
-              Ten minutes, audio only, optional. The interviewer says it&apos;s an AI, then asks the candidate to walk
+              Ten minutes, audio only, optional. Athena, the interviewer, says she&apos;s an AI, then asks the candidate to walk
               through the change they just submitted and a project from their portfolio. It checks the answer mentions
               the expected facts (the file, the function, the fix) with plain keyword matching.
             </p>
@@ -107,7 +108,7 @@ export default function Assistant() {
               <li>At most 10 small LLM calls and 4,000 tokens per interview; scripted lines need none.</li>
             </ul>
             <p className="small voice-try">
-              <Link href="/interview" className="btn" data-cursor="Speak">
+              <Link href="/interview" className="btn">
                 Try the browser demo
               </Link>
               <span>The same flow with a scripted plan, running entirely in this tab.</span>

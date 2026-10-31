@@ -49,6 +49,13 @@ from our own familiarity with the public site, not from a fresh capture.
   (centered, logo-wall proof, alternating rows). We have no customers and won't
   pretend to, so our proof is test counts, timings and the code itself.
 
+## Name
+
+**Apollo**, god of truth; his oracle at Delphi bore "Know thyself" and never handed
+anyone an answer, which is the assistant's rule. The voice interviewer is **Athena**,
+who founded the first court in the Eumenides. Both live in `lib/site.ts` (`NAME`,
+`AGENT`).
+
 ## Direction: "engraved porcelain"
 
 Greek myth, chosen because its best-known stories are about fair judgement and
@@ -73,14 +80,27 @@ Two surfaces: **parchment** with cobalt engraving ink (what people read) and **l
 night** with laurel gold (where code runs and is judged: aegis, oracle, footer, and
 the interview page).
 
+**Dark theme.** A sun/moon toggle in the header switches the whole page to night:
+lapis paper, moonlit-cream headings, engravings printed as pale porcelain-blue
+negatives, gold accents. The choice is saved per browser (`localStorage`, wrapped in
+try/catch); without one the page follows the system setting. An inline script in
+`<head>` sets `data-theme` before first paint, and a `prefers-color-scheme` block
+covers visitors without JavaScript. The validation certificate stays parchment in
+both themes.
+
 ## Imagery
 
-Single engravings cut from the team's three asset sheets by
-`scripts/cut-greek.mjs` into `public/greek/`: crop, 2x Lanczos, ink density to
-alpha, flood-fill from a seed to drop neighbouring drawings, holes filled for an
-opaque silhouette. Each asset gives a parchment cutout (layers hide what's behind
-them) and an ink-only mask (`<Engraving ink>`, printed in `currentColor` on night
-sections). Scenes (ship, arch, coast, amphora) are kept whole with feathered edges.
+Single engravings cut from the team's asset sheets by `scripts/cut-greek.mjs` into
+`public/greek/`, at 4x the sheet resolution. The sheets are first upscaled 4x with
+Real-ESRGAN (`scripts/upscale-sheets.py`); each crop blends 35% of that (crisp
+outlines) with 65% sharpened Lanczos (keeps the stipple and hatching, which ESRGAN
+alone smooths into flat cartoon shading). Then: ink density to alpha, flood-fill
+from a seed to drop neighbouring drawings, holes filled for an opaque silhouette.
+Each asset is two alpha masks, `-ink` (line work) and `-sil` (silhouette), coloured
+by CSS tokens (`--engr-ink`, `--engr-paper`) so both themes share one set of files;
+`<Engraving ink>` prints the line work alone in `currentColor`. Masks load when an
+engraving comes within 1200 px of the viewport. Scenes (ship, arch, coast, amphora)
+are kept whole with feathered edges.
 Vector ornaments (astrolabe, meander, stars, temple) are drawn in SVG/CSS so they
 stay crisp at any size.
 
@@ -118,14 +138,13 @@ follow the theme without their own changes.
 - The voyage is sticky and scroll-scrubbed: emblem, numeral and panel change per
   port while the ship sails the route.
 - Hover: magnetic buttons, 3D tilt with a sheen on engravings, rolling nav labels,
-  lifting tier cards, a difference-blend cursor that opens on links and shows a word
-  on some ([data-cursor]).
+  lifting tier cards. The system cursor is kept.
 - The oracle orb (components/OracleOrb.tsx): one WebGL shader, a marbled porcelain
   sphere with engraving hatch lines inside a corona of hair-thin rays that follow the
   audio level; an orbit with three dots while thinking, ripples on spoken words. Used
-  on the home page and as the interviewer on /interview.
+  on the home page and as Athena, the interviewer, on /interview.
 - Only transform, opacity and clip-path animate. `prefers-reduced-motion` removes
-  the intro, Lenis, parallax, the cursor and the loops; final states show at once.
+  the intro, Lenis, parallax and the loops; final states show at once.
 
 ## What we're avoiding
 

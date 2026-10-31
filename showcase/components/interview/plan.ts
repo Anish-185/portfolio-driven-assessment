@@ -1,3 +1,5 @@
+import { AGENT } from "@/lib/site";
+
 // Question plans and the adaptive turn logic for the browser-only practice interview.
 // The structure (sections, planned questions with follow-ups, a word-count difficulty
 // signal, hard time and turn ceilings) follows DeepInterview's live loop
@@ -244,7 +246,7 @@ export function ack(turn: number): string {
 
 export function greeting(setup: Setup): string {
   const who = setup.name.trim() ? `Hi ${setup.name.trim()}, ` : "Hi, ";
-  return `${who}thanks for joining. This is a short practice interview, about ten minutes. Take your time, and say "next" whenever you want to move on.`;
+  return `${who}I'm ${AGENT}, an AI interviewer. Thanks for joining. This is a short practice interview, about ten minutes. Take your time, and say "next" whenever you want to move on.`;
 }
 
 export const CLOSING =

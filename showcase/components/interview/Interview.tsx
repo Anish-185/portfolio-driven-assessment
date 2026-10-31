@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Chip from "@/components/Chip";
-import { NAME } from "@/lib/site";
+import { NAME, AGENT } from "@/lib/site";
 import BlobStage, { type AgentState, type BlobSignal } from "./Blob";
 import {
   ack,
@@ -472,7 +472,7 @@ export default function Interview() {
               </label>
             </div>
             <label className="iv-field">
-              <span className="iv-lab">What should the interviewer call you? (optional)</span>
+              <span className="iv-lab">What should {AGENT} call you? (optional)</span>
               <input
                 value={setup.name}
                 onChange={(e) => setSetup({ ...setup, name: e.target.value })}
@@ -554,6 +554,7 @@ export default function Interview() {
             <figure className="iv-orb">
               <BlobStage state={agent} signal={signal} />
               <figcaption>
+                <span className="iv-agent">{AGENT}</span>
                 <span className="orb-state" aria-live="polite">
                   {phase === "done" ? "Finished" : CAPTION[agent]}
                 </span>
@@ -567,7 +568,7 @@ export default function Interview() {
               <ol ref={log} aria-live="polite" tabIndex={0}>
                 {turns.map((t) => (
                   <li key={t.id} data-r={t.role}>
-                    <span className="iv-who">{t.role === "interviewer" ? "Interviewer" : "You"}</span>
+                    <span className="iv-who">{t.role === "interviewer" ? AGENT : "You"}</span>
                     <p>{t.text}</p>
                   </li>
                 ))}
@@ -679,7 +680,7 @@ function Notes({
   const pace = paces.length ? Math.round(paces.reduce((a, b) => a + b, 0) / paces.length) : null;
 
   const download = () => {
-    const lines = turns.map((t) => `${t.role === "interviewer" ? "Interviewer" : "You"}: ${t.text}`);
+    const lines = turns.map((t) => `${t.role === "interviewer" ? AGENT : "You"}: ${t.text}`);
     const file = new Blob([lines.join("\n\n") + "\n"], { type: "text/plain" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(file);

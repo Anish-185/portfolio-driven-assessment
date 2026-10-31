@@ -73,6 +73,8 @@ A standalone static site for the project presentation. Versions are pinned exact
 | [Archivo](https://github.com/Omnibus-Type/Archivo) (Omnibus-Type) | OFL-1.1 | Text typeface |
 | [JetBrains Mono](https://github.com/JetBrains/JetBrainsMono) | OFL-1.1 | Code typeface |
 | Blue engraving asset sheets (Greek and Roman figures, architecture, ornaments) | Provided by the team (source to be confirmed) | `showcase/public/greek/`: single engravings cut from the sheets by `showcase/scripts/cut-greek.mjs` (sharp, already a Next.js dependency) |
+| [Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN) (Xintao Wang et al.), lightweight anime x4 weights from [xiongjie/lightweight-real-ESRGAN-anime](https://huggingface.co/xiongjie/lightweight-real-ESRGAN-anime) | BSD-3-Clause | Build-time only: `showcase/scripts/upscale-sheets.py` upscales the asset sheets 4x; 35% of each cut engraving comes from it (crisp outlines), the rest from sharpened Lanczos (keeps the stipple) |
+| [ONNX Runtime](https://github.com/microsoft/onnxruntime), [NumPy](https://github.com/numpy/numpy), [Pillow](https://github.com/python-pillow/Pillow) | MIT, BSD-3-Clause, MIT-CMU | Build-time only: run the upscaler (`uv run --with ...`), not shipped |
 | [Hermes Agent](https://hermes-agent.nousresearch.com/) site (Nous Research) | Design reference only | Inspiration for pairing classical engraving with a technical product; no code or assets used |
 
 Product screenshots on the site are captured from our own running app with Playwright (listed under End-to-end test).

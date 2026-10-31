@@ -5,6 +5,7 @@ import { motion, useMotionValueEvent, useScroll, useSpring } from "motion/react"
 import Link from "next/link";
 import { NAME, PRACTICE_URL } from "@/lib/site";
 import { Star } from "./fx";
+import ThemeToggle from "./ThemeToggle";
 
 const LINKS = [
   ["#try", "Try it"],
@@ -51,6 +52,7 @@ export default function Header() {
           <a href={PRACTICE_URL} className="hdr-cc">
             Practice
           </a>
+          <ThemeToggle />
           <Link href="/comprehension" className="hdr-cc">
             Code reading
           </Link>

@@ -10,7 +10,7 @@ import {
   useTransform,
   type MotionValue,
 } from "motion/react";
-import { EVENT, NAME } from "@/lib/site";
+import { AGENT, EVENT, NAME } from "@/lib/site";
 import { Engraving, Magnetic, Star } from "./fx";
 import { useIntroDone } from "./Intro";
 
@@ -218,7 +218,7 @@ export default function Hero() {
           </p>
           <div className="hero-cta">
             <Magnetic>
-              <a href="#how" className="btn btn-solid" data-cursor="Read">
+              <a href="#how" className="btn btn-solid">
                 How it works
               </a>
             </Magnetic>
@@ -239,7 +239,8 @@ export default function Hero() {
           <p className="inscr">Plate I · Athena</p>
           <p className="small">
             In the Eumenides, Athena ends a blood feud by founding the first court: evidence is heard, votes are
-            counted, and nobody&apos;s anger decides. We built the same thing for code.
+            counted, and nobody&apos;s anger decides. We built the same thing for code, under Apollo, god of truth,
+            and {AGENT} is the voice that interviews the candidate.
           </p>
           <p className="inscr hero-event">
             {EVENT} · Team XLI

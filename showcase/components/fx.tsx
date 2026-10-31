@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useRef } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import {
   motion,
   useMotionValue,
@@ -15,8 +15,10 @@ import { GREEK, NUMERALS, type GreekName } from "@/lib/greek";
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 /**
- * One engraving. Default: the parchment cutout (opaque inside the figure). `ink`: the
- * line work alone as a CSS mask, printed in `currentColor`, for the night sections.
+ * One engraving, drawn from two alpha masks so the theme colours it: a silhouette in
+ * the page colour (layered figures hide what's behind them) under the line work in
+ * engraving ink. `ink`: the line work alone, in `currentColor`, for the night
+ * sections. Masks load when the engraving comes within 1200 px of the viewport.
  */
 export function Engraving({
   name,
@@ -34,31 +36,42 @@ export function Engraving({
   style?: React.CSSProperties;
 }) {
   const [w, h] = GREEK[name];
-  if (ink) {
-    const url = `url(/greek/${name}-ink.webp)`;
-    return (
-      <span
-        className={`engr engr-ink ${className ?? ""}`}
-        role={alt ? "img" : undefined}
-        aria-label={alt || undefined}
-        aria-hidden={alt ? undefined : true}
-        style={{ aspectRatio: `${w} / ${h}`, WebkitMaskImage: url, maskImage: url, ...style }}
-      />
+  const ref = useRef<HTMLSpanElement>(null);
+  const [near, setNear] = useState(eager);
+
+  useEffect(() => {
+    if (near || !ref.current) return;
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) {
+          setNear(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin: "1200px" },
     );
-  }
+    io.observe(ref.current);
+    return () => io.disconnect();
+  }, [near]);
+
+  const mask = (kind: "ink" | "sil"): React.CSSProperties | undefined => {
+    if (!near) return undefined;
+    const url = `url(/greek/${name}-${kind}.webp)`;
+    return { WebkitMaskImage: url, maskImage: url };
+  };
+
   return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      className={`engr ${className ?? ""}`}
-      src={`/greek/${name}.webp`}
-      width={w}
-      height={h}
-      alt={alt}
-      loading={eager ? "eager" : "lazy"}
-      decoding="async"
-      draggable={false}
-      style={style}
-    />
+    <span
+      ref={ref}
+      className={`engr ${ink ? "engr-ink" : ""} ${className ?? ""}`}
+      role={alt ? "img" : undefined}
+      aria-label={alt || undefined}
+      aria-hidden={alt ? undefined : true}
+      style={{ aspectRatio: `${w} / ${h}`, ...style }}
+    >
+      {!ink && <span className="engr-sil" style={mask("sil")} />}
+      <span className="engr-lines" style={mask("ink")} />
+    </span>
   );
 }
 

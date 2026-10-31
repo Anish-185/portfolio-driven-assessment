@@ -35,7 +35,7 @@ function Frame({ shot, i }: { shot: Shot; i: number }) {
   const y = useTransform(scrollYProgress, [0, 1], i % 2 ? [60, -60] : [30, -30]);
   return (
     <motion.figure ref={ref} className={`shot shot-${i}`} style={{ y: reduce ? 0 : y }}>
-      <div className="shot-bar" aria-hidden data-cursor="Live">
+      <div className="shot-bar" aria-hidden>
         <i /><i /><i />
         <span>localhost:3000</span>
       </div>

@@ -22,7 +22,7 @@ export default function Team() {
             <Engraving name="wreath-bow" ink className="team-wreath" />
             <p>
               <span className="team-greek">ΓΝΩΘΙ ΣΕΑΥΤΟΝ</span>
-              <span className="small">Know thyself. Cut above the temple at Delphi; we ask candidates to show it.</span>
+              <span className="small">Know thyself. Cut above Apollo&apos;s temple at Delphi; we ask candidates to show it.</span>
             </p>
           </div>
           <div className="team-links">
@@ -30,7 +30,7 @@ export default function Team() {
               {TEAM_LINE}, {EVENT}.
             </p>
             <Magnetic>
-              <a href={REPO_URL} className="btn" data-cursor="Code">
+              <a href={REPO_URL} className="btn">
                 Source on GitHub
               </a>
             </Magnetic>

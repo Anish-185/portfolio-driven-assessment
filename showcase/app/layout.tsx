@@ -9,7 +9,6 @@ import "./globals.css";
 import "./sections.css";
 import { NAME } from "@/lib/site";
 import SmoothScroll from "@/components/SmoothScroll";
-import Cursor from "@/components/Cursor";
 
 export const metadata: Metadata = {
   title: `${NAME}: coding assessments built from the candidate's own work`,
@@ -18,15 +17,23 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#f3eee3",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f3eee3" },
+    { media: "(prefers-color-scheme: dark)", color: "#0b1131" },
+  ],
 };
+
+// Runs before first paint so the saved (or system) theme never flashes the other one.
+const THEME = `try{var t=localStorage.getItem("theme");if(t!=="light"&&t!=="dark")t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.dataset.theme=t}catch(e){}`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME }} />
+      </head>
       <body>
         <SmoothScroll>{children}</SmoothScroll>
-        <Cursor />
       </body>
     </html>
   );

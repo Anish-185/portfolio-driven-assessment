@@ -23,6 +23,12 @@
   --fail-hi: #ff8a70;
   --thread: #b4432f;
   --planned: #8c8ea6;
+  --engr-paper: var(--paper);
+  --engr-ink: var(--ink);
+  --card: rgba(255, 255, 255, 0.3);
+  --shadow: #121d63;
+  --grain: 0.09;
+  color-scheme: light;
 
   --display: "Cormorant Variable", "EB Garamond Variable", Georgia, serif;
   --inscr: "Cinzel Variable", "EB Garamond Variable", Georgia, serif;
@@ -35,6 +41,67 @@
   --side: clamp(16px, 4vw, 56px);
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --meander: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Cpath d='M0 1H28M0 27H28M0 22H22V6H6V17H17V11H11' fill='none' stroke='black' stroke-width='2'/%3E%3C/svg%3E");
+}
+
+/* Dark theme: the parchment turns to lapis night; engravings print in pale porcelain
+   blue, headings in moonlit cream, accents in laurel gold. Set by the header toggle
+   (data-theme on <html>, saved per browser); without a choice it follows the system. */
+:root[data-theme="dark"] {
+  --paper: #0b1131;
+  --paper-2: #121a45;
+  --paper-3: #1a2358;
+  --ink: #ece5d3;
+  --ink-deep: #ffffff;
+  --text-ink: #c8cee6;
+  --graphite: #8e96c0;
+  --rule: rgba(236, 229, 211, 0.13);
+  --sandbox: #060a22;
+  --sandbox-2: #111940;
+  --accent: #e2c27a;
+  --gold: #e2c27a;
+  --fail: #ff8a70;
+  --thread: #ff8a70;
+  --planned: #7d84ad;
+  --engr-ink: #a9b7f2;
+  --card: rgba(255, 255, 255, 0.035);
+  --shadow: #000000;
+  --grain: 0.22;
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --paper: #0b1131;
+    --paper-2: #121a45;
+    --paper-3: #1a2358;
+    --ink: #ece5d3;
+    --ink-deep: #ffffff;
+    --text-ink: #c8cee6;
+    --graphite: #8e96c0;
+    --rule: rgba(236, 229, 211, 0.13);
+    --sandbox: #060a22;
+    --sandbox-2: #111940;
+    --accent: #e2c27a;
+    --gold: #e2c27a;
+    --fail: #ff8a70;
+    --thread: #ff8a70;
+    --planned: #7d84ad;
+    --engr-ink: #a9b7f2;
+    --card: rgba(255, 255, 255, 0.035);
+    --shadow: #000000;
+    --grain: 0.22;
+    color-scheme: dark;
+  }
+}
+
+html {
+  transition: background-color 0.4s;
+}
+
+body,
+.hdr,
+.dark {
+  transition: background-color 0.5s var(--ease), color 0.5s var(--ease);
 }
 
 *,
@@ -76,7 +143,7 @@ body::after {
   inset: 0;
   pointer-events: none;
   z-index: 90;
-  opacity: 0.09;
+  opacity: var(--grain);
   mix-blend-mode: multiply;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .1 0 0 0 0 .12 0 0 0 0 .3 0 0 0 1.1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
@@ -135,6 +202,10 @@ p {
 .section {
   padding: clamp(96px, 13vw, 190px) 0;
   position: relative;
+}
+
+:root[data-theme="dark"] body::after {
+  mix-blend-mode: overlay;
 }
 
 .dark {
@@ -373,19 +444,32 @@ p {
 
 .engr {
   display: block;
+  position: relative;
   width: 100%;
   height: auto;
   user-select: none;
 }
 
-.engr-ink {
-  background: currentColor;
-  -webkit-mask-size: contain;
-  mask-size: contain;
+.engr-sil,
+.engr-lines {
+  position: absolute;
+  inset: 0;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-  mask-position: center;
+}
+
+.engr-sil {
+  background: var(--engr-paper);
+}
+
+.engr-lines {
+  background: var(--engr-ink);
+}
+
+.engr-ink .engr-lines {
+  background: currentColor;
 }
 
 .meander {

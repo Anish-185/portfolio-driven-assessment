@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import OracleOrb, { type OrbSignal, type OrbState } from "./OracleOrb";
+import { AGENT } from "@/lib/site";
 
 // The oracle on the home page, cycling through its four states with a simulated
 // volume so the reader can see each one.
@@ -41,6 +42,7 @@ export default function Orb() {
     <figure className="orb">
       <OracleOrb state={state} signal={signal} className="orb-canvas" />
       <figcaption>
+        <span className="orb-name">{AGENT}</span>
         <span className="orb-state">{CAPTION[state]}</span>
         <span className="small">Simulated audio level. The real orb follows the mic or the TTS playback.</span>
       </figcaption>

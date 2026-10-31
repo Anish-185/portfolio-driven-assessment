@@ -211,7 +211,16 @@ export default function TrailMap() {
                         />
                       ) : null}
                       {n.id === BUG ? (
-                        <image href="/greek/bull.webp" x={n.x - 34} y={n.y - 40} width={68} height={70} className="t-bull" />
+                        <g className="t-bull">
+                          <mask id="bull-sil" style={{ maskType: "alpha" }}>
+                            <image href="/greek/bull-sil.webp" x={n.x - 34} y={n.y - 40} width={68} height={70} />
+                          </mask>
+                          <mask id="bull-ink" style={{ maskType: "alpha" }}>
+                            <image href="/greek/bull-ink.webp" x={n.x - 34} y={n.y - 40} width={68} height={70} />
+                          </mask>
+                          <rect x={n.x - 34} y={n.y - 40} width={68} height={70} mask="url(#bull-sil)" className="t-bull-sil" />
+                          <rect x={n.x - 34} y={n.y - 40} width={68} height={70} mask="url(#bull-ink)" className="t-bull-ink" />
+                        </g>
                       ) : (
                         <circle cx={n.x} cy={n.y} r={6} className="t-dot" />
                       )}

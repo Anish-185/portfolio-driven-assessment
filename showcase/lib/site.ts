@@ -2,7 +2,10 @@
 // on main (2026-10-31, after P2.7b); change them here, not in the components.
 
 /** Product name. One place to change it. */
-export const NAME = "Assay";
+export const NAME = "Apollo";
+
+/** The voice interviewer's name. */
+export const AGENT = "Athena";
 
 export const TEAM_LINE = "HFT26 Team 41 · JL";
 export const EVENT = "CBIT Hacktoberfest '26";
