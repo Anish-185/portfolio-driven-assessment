@@ -1,363 +1,514 @@
 "use client";
 
-// Landing: the product first. The hero is a pipeline window that plays once (portfolio in,
-// verified report out); below it every feature in one sweep, each with a small mock of the
-// real UI, then the scoring rules and the call to action. The engravings are texture only:
-// at most one per section, never above their native size, at low opacity (Hermes-style).
+// Landing: Areté as a set of engraved plates on the night stage. The hero is Athena under a
+// turning astrolabe with the name in front of her (from the showcase's Assay hero). Each
+// plate below shows one capability of the product with a small mock of its real UI, under
+// one engraving. Motion is scroll-driven only (parallax and reveals); no cursor effects.
 import Link from "next/link";
-import { SiteNav, BRAND } from "@/components/olympus/Chrome";
-import Engraving from "@/components/olympus/Engraving";
+import { useMemo, useRef, useState } from "react";
+import { BRAND, SiteNav } from "@/components/olympus/Chrome";
+import Greek from "@/components/olympus/Greek";
 import { IconCheck } from "@/components/olympus/Icons";
-import { Btn } from "@/components/olympus/Kit";
+import { Btn, SmoothScroll } from "@/components/olympus/Kit";
+import Meander from "@/components/olympus/Meander";
 import { TLink } from "@/components/olympus/Shell";
+import type { GreekName } from "@/lib/olympus/greek";
+import { gsap, ScrollTrigger, useGsap } from "@/lib/olympus/motion";
+import "./landing.css";
 
-// The demo candidate and the numbers from a real `make e2e` run.
-const PIPELINE: { step: string; title: string; detail: React.ReactNode }[] = [
-  {
-    step: "Portfolio",
-    title: "Ananya Rao, backend developer",
-    detail: (
-      <span className="flex flex-wrap gap-1.5">
-        {["résumé.pdf", "github.com/ananyarao", "LeetCode 214 solved", "Codeforces 1480"].map((s) => (
-          <span key={s} className="pipe-chip">
-            {s}
-          </span>
-        ))}
-      </span>
-    ),
-  },
-  {
-    step: "Profile",
-    title: "Read by rules, not guessed",
-    detail: (
-      <span className="mono text-[12.5px]">
-        <K>domain</K> backend <K>runtime</K> python311 <K>tier</K> adept
-      </span>
-    ),
-  },
-  {
-    step: "Tasks",
-    title: "Built in her own stack, then validated",
-    detail: (
-      <span className="flex flex-col gap-1 text-[13px]">
-        <span>
-          Fix: expense list pages are wrong <span className="text-[var(--text-3)]">FastAPI, app/utils.py</span>
-        </span>
-        <span>
-          Longest run of distinct characters <span className="text-[var(--text-3)]">sliding window</span>
-        </span>
-      </span>
-    ),
-  },
-  {
-    step: "Session",
-    title: "60 minutes in a sealed sandbox",
-    detail: <span className="mono text-[12.5px] text-[var(--text-2)]">no network, fresh container, hidden tests run apart</span>,
-  },
-  {
-    step: "Interview",
-    title: "AI voice interview about her own diff",
-    detail: <span className="text-[13px] text-[var(--text-2)]">5 questions, 4 of 4 submission facts mentioned, not scored</span>,
-  },
+const NUMERALS = ["I", "II", "III", "IV", "V"];
+
+const BAND = [
+  "Your own stack",
+  "Your own projects",
+  "Sixty minutes",
+  "Validated before it ships",
+  "Sandboxed, network off",
+  "Graded by tests alone",
+  "Re-graded to the byte",
 ];
 
-const FEATURES: { title: string; body: string; mock: React.ReactNode; wide?: boolean }[] = [
+type Step = { title: string; room: string; href: string; art: GreekName; ink?: string; body: string; mock: React.ReactNode };
+
+const STEPS: Step[] = [
   {
-    title: "One portfolio in",
-    body: "Upload a résumé PDF or link GitHub, LeetCode and Codeforces. Everything becomes one JSON Resume portfolio.",
-    wide: true,
-    mock: <TopicBars />,
-  },
-  {
-    title: "A profile from rules",
-    body: "Domain, language, concepts and tier come from deterministic rules. A model only fills a gap.",
+    room: "The Offering",
+    title: "Your portfolio, read by rules.",
+    href: "/ascend",
+    art: "hermes-fly",
+    body: "Upload a résumé or link GitHub, LeetCode and Codeforces. Hermes carries it all into one portfolio, and plain rules pick the domain, language, concepts and tier.",
     mock: (
-      <Code>
-        <K>concepts</K> pagination, caching
-        <br />
-        <K>suggested</K> adept
-        <br />
-        <span className="text-[var(--text-3)]"># 165 solved, graphs at adept</span>
-      </Code>
+      <>
+        <div className="flex flex-wrap gap-1.5">
+          {["résumé.pdf", "github.com/ananyarao", "LeetCode 214 solved", "Codeforces 1480"].map((c) => (
+            <span key={c} className="tag">
+              {c}
+            </span>
+          ))}
+        </div>
+        <Code>
+          <K>domain</K> backend <K>runtime</K> python311
+          <br />
+          <K>concepts</K> pagination, caching <K>tier</K> adept
+        </Code>
+      </>
     ),
   },
   {
-    title: "Tasks in the candidate's own stack",
-    body: "A real seed repo is mutated into a bug or a missing feature in their language, plus an algorithm matched to the topics they have solved.",
-    wide: true,
+    room: "Trials of Athena",
+    title: "Sixty minutes in your own stack.",
+    href: "/trials",
+    art: "helmet",
+    body: "A bug or a missing feature in a repo shaped like yours, plus an algorithm matched to the topics you have solved. Every run is a sealed sandbox; hints climb a ladder and never write the fix.",
     mock: (
-      <div className="grid gap-2 sm:grid-cols-3">
-        {[
-          ["Novice", "1-file bug fix, easy algorithm"],
-          ["Adept", "2–3 file feature, medium, hints on"],
-          ["Master", "multi-file bug + speed budget, hard"],
-        ].map(([t, d]) => (
-          <div key={t} className="rounded-xl bg-[var(--parchment-3)]/60 p-3">
-            <p className="display text-[22px]">{t}</p>
-            <p className="mt-1 text-[12.5px] leading-snug text-[var(--text-2)]">{d}</p>
-          </div>
-        ))}
-      </div>
-    ),
-  },
-  {
-    title: "Every task certified",
-    body: "Before anyone sees a task, a validation gate proves it is fair.",
-    mock: (
-      <ul className="space-y-1.5 text-[13px]">
-        {["reference passes 65/65, three times", "starter fails a visible test", "statement doesn't leak the fix"].map((c) => (
-          <li key={c} className="flex items-center gap-2">
-            <Tick /> {c}
+      <>
+        <ul className="mock-list">
+          <li>
+            <span>Fix: expense list pages are wrong</span>
+            <span className="text-[var(--text-3)]">app/utils.py</span>
           </li>
-        ))}
+          <li>
+            <span>Longest run of distinct characters</span>
+            <span className="text-[var(--text-3)]">sliding window</span>
+          </li>
+        </ul>
+        <Code>
+          <span className="text-[var(--text-3)]">$</span> run visible <span className="text-[var(--pass)]">3 passed</span> in 2.6 s
+        </Code>
+        <div className="flex gap-1.5">
+          {["L1 concept", "L2 function", "L3 line"].map((l) => (
+            <span key={l} className="tag">
+              {l}
+            </span>
+          ))}
+        </div>
+      </>
+    ),
+  },
+  {
+    room: "The Labyrinth",
+    title: "Read code you didn't write.",
+    href: "/labyrinth",
+    art: "bull",
+    ink: "var(--moon)",
+    body: "A real repository with real issues. Find each cause, explain the fix and say how you'd make it faster. Ariadne holds the thread: she points the way and never walks it.",
+    mock: (
+      <ul className="mock-list">
+        <li>
+          <span>#12 East-zone couriers get far parcels</span>
+          <span className="text-[var(--fail)]">bug</span>
+        </li>
+        <li>
+          <span>#15 Route cache serves another zone</span>
+          <span className="text-[var(--fail)]">bug</span>
+        </li>
+        <li>
+          <span>#18 GET /deliveries takes 4 s</span>
+          <span className="text-[var(--gold-bright)]">performance</span>
+        </li>
       </ul>
     ),
   },
   {
-    title: "Sandboxed runs",
-    body: "Code runs in a fresh container per run: no network, capped CPU, memory and time, non-root.",
+    room: "The Oracle",
+    title: "Explain it, out loud.",
+    href: "/oracle",
+    art: "sun",
+    body: "A short voice interview with an AI that has read the role, your project and your own diff. One follow-up per question, never about who you are, and never part of the score.",
     mock: (
-      <Code>
-        <span className="text-[var(--text-3)]">$</span> run visible
-        <br />
-        <span className="text-[var(--pass)]">3 passed</span> in 2.6 s
-      </Code>
-    ),
-  },
-  {
-    title: "Hints that never solve it",
-    body: "Adept and Master get an assistant with a hint ladder that rises only after a run. Using it shows up as AI efficiency.",
-    mock: (
-      <div className="flex gap-1.5 text-[12px]">
-        {["L1 concept", "L2 function", "L3 line"].map((l, i) => (
-          <span key={l} className={`pipe-chip ${i === 0 ? "!text-[var(--ink-hi)]" : ""}`}>
-            {l}
-          </span>
-        ))}
+      <div className="space-y-2 text-[13.5px]">
+        <p>
+          <span className="text-[var(--ink)]">Oracle</span> Which function did you change, and why?
+        </p>
+        <p className="text-[var(--text-2)]">
+          <span className="text-[var(--text)]">You</span> paginate computed the offset from page minus two…
+        </p>
+        <p className="tag !text-[var(--gold-bright)]">4 of 4 submission facts mentioned</p>
       </div>
     ),
   },
   {
-    title: "Code reading",
-    body: "A real repository with real issues: analyse it, debug it and say how you'd make it faster, with a guide that points but never walks.",
-    mock: <p className="mono text-[12.5px] text-[var(--text-2)]">#42 cache returns stale totals</p>,
-  },
-  {
-    title: "AI voice interview",
-    body: "Questions from the recruiter's role, the candidate's project and their own diff. One follow-up each, never scored.",
-    mock: (
-      <div className="flex items-center gap-3 text-[13px]">
-        <span className="voice-dot" aria-hidden="true" />
-        <span className="text-[var(--text-2)]">&ldquo;Why did paginate need a new offset?&rdquo;</span>
-      </div>
-    ),
-  },
-  {
-    title: "A report you can re-run",
-    body: "Score from hidden tests only. Re-grade gives the identical number. The report adds a Trail Map of how they navigated the code, a portfolio claim check, integrity notes and the interview transcript, none of which changes the score.",
-    wide: true,
+    room: "The Verdict",
+    title: "A score you can recompute.",
+    href: "/verdict",
+    art: "wreath",
+    ink: "var(--gold-bright)",
+    body: "Correctness comes from hidden tests and published formulas; re-grade gives the identical number. Beside it, never in it: a Trail Map of how you moved through the code, a portfolio claim check and integrity notes.",
     mock: (
       <div className="flex flex-wrap items-end gap-6">
         <div>
-          <p className="display text-[56px] leading-none text-[var(--gold-bright)]">100</p>
-          <p className="text-[12.5px] text-[var(--text-2)]">Strong</p>
+          <p className="display text-[64px] leading-none text-[var(--gold-bright)]">100</p>
+          <p className="text-[13px] text-[var(--text-2)]">Strong</p>
         </div>
-        <ul className="space-y-1 text-[13px]">
-          <li className="flex items-center gap-2">
-            <Tick /> hidden tests 92 of 92
-          </li>
-          <li className="flex items-center gap-2">
-            <Tick /> re-grade identical
-          </li>
-          <li className="flex items-center gap-2">
-            <Tick /> claims checked: pagination, sliding window
-          </li>
+        <ul className="space-y-1.5 text-[13.5px]">
+          {["hidden tests 92 of 92", "re-grade identical", "claims checked: pagination, sliding window"].map((t) => (
+            <li key={t} className="flex items-center gap-2">
+              <Tick /> {t}
+            </li>
+          ))}
         </ul>
       </div>
     ),
   },
 ];
 
+const GUIDES: { name: string; role: string; art: GreekName; body: string; rule: string }[] = [
+  {
+    name: "Hermes",
+    role: "Hint assistant",
+    art: "hermes",
+    body: "Concept, then function, then line, rising only after you run the tests. Eight hints per task; asking for the answer gets a refusal, not a model call.",
+    rule: "Never writes your fix",
+  },
+  {
+    name: "Apollo",
+    role: "Report summary",
+    art: "apollo",
+    body: "Four sentences for the recruiter, written from the report's numbers alone: no code, no tests, no guessing at causes.",
+    rule: "Labelled “AI summary, not scored”",
+  },
+  {
+    name: "Pythia",
+    role: "Voice interviewer",
+    art: "sun",
+    body: "Speaks with a generated voice, listens through the browser, follows up once, and stops at the time limit.",
+    rule: "Shown in the report, never scored",
+  },
+];
+
 const RULES = [
-  ["Models never score", "Correctness comes only from test results and published formulas."],
-  ["Hidden stays hidden", "Reference solutions and hidden tests never reach the browser or any model."],
-  ["Sealed runs", "Fresh container per run, no network, CPU, memory and time limits."],
-  ["Reproducible", "The same events and snapshots always give the same score."],
+  ["No model decides a score", "Correctness comes only from test results and published formulas."],
+  ["What is hidden stays hidden", "Reference solutions and hidden tests never reach the browser or any model."],
+  ["Every run in a sealed vault", "A fresh container per run: no network, capped CPU, memory and time, non-root."],
+  ["Same deeds, same verdict", "The same events and snapshots always give the same score, to the byte."],
 ];
 
 export default function Landing() {
+  const root = useRef<HTMLDivElement>(null);
+  const [active, setActive] = useState(0);
+
+  useGsap(root, (reduced) => {
+    if (reduced) return;
+
+    // Hero: one intro, then scroll parallax (Athena rises, the name sinks, the sky turns).
+    gsap
+      .timeline({ defaults: { ease: "expo.out" } })
+      .from(".hero-astro-in", { opacity: 0, scale: 0.86, rotate: -30, duration: 2.2 })
+      .from(".hero-athena-in", { opacity: 0, y: 90, duration: 1.7 }, 0.1)
+      .from(".hero-ch > span", { yPercent: 105, duration: 1.3, stagger: 0.07 }, 0.25)
+      .from(".hero-fade", { opacity: 0, y: 24, duration: 1, stagger: 0.12 }, 0.7);
+    const hero = { trigger: ".hero", start: "top top", end: "bottom top", scrub: true };
+    gsap.to(".hero-athena", { yPercent: -16, ease: "none", scrollTrigger: hero });
+    gsap.to(".hero-name", { yPercent: 36, ease: "none", scrollTrigger: hero });
+    gsap.to(".hero-astro", { rotate: 40, scale: 1.2, ease: "none", scrollTrigger: hero });
+    gsap.to(".hero-top", { opacity: 0, yPercent: -30, ease: "none", scrollTrigger: { ...hero, end: "60% top" } });
+
+    // Band: a slow marquee.
+    gsap.to(".band-track", { xPercent: -50, duration: 40, ease: "none", repeat: -1 });
+
+    // Plates: the figure on the stage follows the step in the middle of the screen.
+    gsap.utils.toArray<HTMLElement>(".step").forEach((el, i) => {
+      ScrollTrigger.create({ trigger: el, start: "top 55%", end: "bottom 55%", onToggle: (s) => s.isActive && setActive(i) });
+    });
+    gsap.to(".stage-art", { yPercent: -8, ease: "none", scrollTrigger: { trigger: ".journey", start: "top bottom", end: "bottom top", scrub: true } });
+
+    // Atlas carries the gate; the tier columns rise as they come in.
+    gsap.fromTo(".atlas-fig", { yPercent: 12 }, { yPercent: -10, ease: "none", scrollTrigger: { trigger: ".forge", start: "top bottom", end: "bottom top", scrub: true } });
+    gsap.from(".tier-col", { yPercent: 40, opacity: 0, stagger: 0.12, ease: "none", scrollTrigger: { trigger: ".tiers", start: "top 90%", end: "top 45%", scrub: true } });
+
+    // The aegis turns while the rules pass; the ship crosses the practice band.
+    gsap.fromTo(".aegis", { rotate: -25, scale: 0.9 }, { rotate: 25, scale: 1.05, ease: "none", scrollTrigger: { trigger: ".rules", start: "top bottom", end: "bottom top", scrub: true } });
+    gsap.fromTo(".ship", { xPercent: -60 }, { xPercent: 60, ease: "none", scrollTrigger: { trigger: ".practice", start: "top bottom", end: "bottom top", scrub: true } });
+    gsap.fromTo(".finale-temple", { yPercent: 25 }, { yPercent: 0, ease: "none", scrollTrigger: { trigger: ".finale", start: "top bottom", end: "bottom bottom", scrub: true } });
+
+    // Everything marked .reveal rises in once.
+    ScrollTrigger.batch(".reveal", {
+      start: "top 88%",
+      once: true,
+      onEnter: (els) => gsap.fromTo(els, { opacity: 0, y: 36 }, { opacity: 1, y: 0, duration: 1.1, stagger: 0.1, ease: "expo.out" }),
+    });
+  });
+
   return (
-    <div className="landing">
+    <div ref={root} className="landing">
+      <SmoothScroll />
       <SiteNav />
 
-      {/* Hero: the product, played once. */}
-      <section className="relative overflow-hidden px-[var(--gutter)] pb-20 pt-36 md:pt-40">
-        <div className="hero-glow" aria-hidden="true" />
-        <div className="pointer-events-none absolute right-[8%] top-24 hidden w-[466px] opacity-[0.07] lg:block" aria-hidden="true">
-          <Engraving name="starchart" className="w-full" />
+      {/* ---------------------------------------------------------------- Hero */}
+      <section className="hero" id="top">
+        <div className="hero-stage" aria-hidden="true">
+          <div className="hero-astro">
+            <div className="hero-astro-in">
+              <Astrolabe />
+            </div>
+          </div>
+          <div className="hero-athena">
+            <div className="hero-athena-in">
+              <Greek name="athena" eager />
+            </div>
+          </div>
+          <div className="hero-floor" />
         </div>
-        <div className="relative mx-auto grid max-w-[1320px] items-center gap-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,600px)]">
-          <div>
-            <h1 className="display text-[clamp(52px,7.2vw,104px)] leading-[0.95] text-[var(--text)]">
-              Your portfolio becomes the assessment.
-            </h1>
-            <p className="mt-7 max-w-[520px] text-[18px] leading-relaxed text-[var(--text-2)]">
-              {BRAND} reads a candidate&apos;s résumé, GitHub, LeetCode and Codeforces, builds a 60-minute test in their own
-              stack, and scores it with hidden tests, never with a language model.
+        <h1 className="hero-name display" aria-label={BRAND}>
+          {BRAND.split("").map((ch, i) => (
+            <span key={i} className="hero-ch" aria-hidden="true">
+              <span>{ch}</span>
+            </span>
+          ))}
+        </h1>
+
+        <div className="hero-top">
+          <div className="hero-copy">
+            <p className="hero-promise hero-fade display">
+              A coding assessment built from the candidate&apos;s <em>own</em> portfolio, and graded only by tests.
             </p>
-            <div className="mt-9 flex flex-wrap items-center gap-3">
+            <p className="hero-sub hero-fade">
+              Upload a portfolio. Get a 60-minute task in the candidate&apos;s stack and domain, validated in a sandbox before
+              anyone sees it. The score comes from test results and fixed formulas, and you can recompute it.
+            </p>
+            <div className="hero-fade mt-7 flex flex-wrap gap-3">
               <Btn href="/ascend">Start with a portfolio</Btn>
-              <a href="#features" className="btn btn-ghost">
+              <a href="#journey" className="btn btn-ghost">
                 <span className="btn-label">
-                  <span>See every feature</span>
-                  <span aria-hidden="true">See every feature</span>
+                  <span>See the five plates</span>
+                  <span aria-hidden="true">See the five plates</span>
                 </span>
               </a>
             </div>
           </div>
-
-          <figure className="pipe" aria-label="How a portfolio becomes a report">
-            <div className="pipe-bar">
-              <span className="pipe-lights" aria-hidden="true">
-                <i />
-                <i />
-                <i />
-              </span>
-              <span>candidate pipeline</span>
-            </div>
-            <ol className="pipe-rows">
-              {PIPELINE.map((row, i) => (
-                <li key={row.step} className="pipe-row" style={{ "--i": i } as React.CSSProperties}>
-                  <span className="pipe-step">{row.step}</span>
-                  <div className="min-w-0">
-                    <p className="text-[14.5px] font-medium text-[var(--text)]">{row.title}</p>
-                    <div className="mt-1.5">{row.detail}</div>
-                  </div>
-                </li>
-              ))}
-              <li className="pipe-row pipe-verdict" style={{ "--i": PIPELINE.length } as React.CSSProperties}>
-                <span className="pipe-step">Report</span>
-                <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-                  <span className="display text-[44px] leading-none text-[var(--gold-bright)]">100</span>
-                  <span className="text-[14.5px] font-medium">Strong</span>
-                  <span className="text-[13px] text-[var(--text-2)]">hidden tests 92 of 92, re-grade identical</span>
-                </div>
-              </li>
-            </ol>
-          </figure>
+          <aside className="hero-plate hero-fade">
+            <p className="inscr">Plate I, Athena</p>
+            <p>
+              In the Eumenides, Athena ends a blood feud by founding the first court: evidence is heard, votes are counted,
+              and nobody&apos;s anger decides. We built the same thing for code.
+            </p>
+            <p className="inscr text-[var(--gold-bright)]">CBIT Hacktoberfest &apos;26, Team XLI</p>
+          </aside>
         </div>
       </section>
 
-      {/* How it works: the real sequence a candidate goes through. */}
-      <section id="how" className="border-y border-[var(--line)] bg-[var(--parchment-2)]/50 px-[var(--gutter)] py-14">
-        <ol className="mx-auto grid max-w-[1320px] gap-8 sm:grid-cols-2 lg:grid-cols-4">
-          {[
-            ["Upload", "Résumé and public profiles become one portfolio.", "/ascend"],
-            ["Solve", "One task in your stack, one algorithm, 60 minutes.", "/trials"],
-            ["Explain", "Read real code, then a short AI voice interview.", "/oracle"],
-            ["Report", "A score from tests, plus how you got there.", "/verdict"],
-          ].map(([t, d, href], i) => (
-            <li key={t} className="flex gap-4">
-              <span className="display text-[34px] leading-none text-[var(--ink)]">{i + 1}</span>
-              <div>
-                <TLink href={href} className="text-[17px] font-medium hover:text-[var(--ink-hi)]">
-                  {t}
-                </TLink>
-                <p className="mt-1 text-[14.5px] leading-relaxed text-[var(--text-2)]">{d}</p>
-              </div>
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      {/* Every feature in one sweep. */}
-      <section id="features" className="px-[var(--gutter)] py-24 md:py-32">
-        <div className="mx-auto max-w-[1320px]">
-          <div className="mb-12 grid gap-6 md:grid-cols-[minmax(0,1fr)_420px] md:items-end">
-            <h2 className="display text-[clamp(40px,5vw,72px)] leading-[1]">Everything it does, on one screen.</h2>
-            <p className="text-[16px] leading-relaxed text-[var(--text-2)]">
-              From the first upload to the recruiter&apos;s report. Each panel shows what the candidate or recruiter actually
-              sees.
-            </p>
-          </div>
-          <div className="feature-grid">
-            {FEATURES.map((f) => (
-              <article key={f.title} className={`feature ${f.wide ? "feature-wide" : ""}`}>
-                <h3 className="text-[18px] font-medium">{f.title}</h3>
-                <p className="mt-2 max-w-[520px] text-[14.5px] leading-relaxed text-[var(--text-2)]">{f.body}</p>
-                <div className="relative mt-6">{f.mock}</div>
-              </article>
+      {/* ---------------------------------------------------------------- Band */}
+      <section className="band" aria-label="What Areté promises">
+        <Meander className="text-[var(--ink)] opacity-40" height={12} />
+        <div className="band-row display" aria-hidden="true">
+          <div className="band-track">
+            {[...BAND, ...BAND].map((w, i) => (
+              <span key={i}>
+                {w}
+                <i>✦</i>
+              </span>
             ))}
           </div>
         </div>
+        <Meander className="text-[var(--ink)] opacity-40" height={12} />
       </section>
 
-      {/* Scoring rules. */}
-      <section id="rules" className="relative overflow-hidden border-t border-[var(--line)] px-[var(--gutter)] py-24">
-        <div className="relative mx-auto grid max-w-[1320px] gap-12 lg:grid-cols-[420px_minmax(0,1fr)]">
-          <h2 className="display text-[clamp(36px,4vw,56px)] leading-[1.02]">Four rules, written into the code.</h2>
-          <dl className="grid gap-x-10 gap-y-8 sm:grid-cols-2">
-            {RULES.map(([t, d]) => (
-              <div key={t} className="border-t border-[var(--line-strong)] pt-4">
-                <dt className="text-[16px] font-medium">{t}</dt>
-                <dd className="mt-1.5 text-[14.5px] leading-relaxed text-[var(--text-2)]">{d}</dd>
+      {/* ---------------------------------------------------------------- Journey */}
+      <section className="journey" id="journey">
+        <div className="journey-head reveal">
+          <p className="inscr">The journey</p>
+          <h2 className="display">Five plates, one honest report.</h2>
+          <p>Each room tests something a résumé can only claim: that you can read, repair, reason and explain.</p>
+        </div>
+        <div className="journey-grid">
+          <div className="stage" aria-hidden="true">
+            <div className="stage-in">
+              <div className="stage-art">
+                {STEPS.map((s, i) => (
+                  <div key={s.room} className={`stage-fig ${i === active ? "is-on" : ""}`} style={{ color: s.ink }}>
+                    {/* Enclosed shapes (medallion, wreath) as line work: their porcelain fill reads as a disk. */}
+                    <Greek name={s.art} ink={!!s.ink} />
+                  </div>
+                ))}
+              </div>
+              <p className="stage-num display">
+                <span>Plate</span> {NUMERALS[active]}
+              </p>
+            </div>
+          </div>
+          <ol className="steps">
+            {STEPS.map((s, i) => (
+              <li key={s.room} className={`step ${i === active ? "is-on" : ""}`}>
+                <p className="inscr">
+                  {NUMERALS[i]}. {s.room}
+                </p>
+                <h3 className="display">{s.title}</h3>
+                <p className="step-body">{s.body}</p>
+                <div className="mock">{s.mock}</div>
+                <TLink href={s.href} className="step-link">
+                  Open {s.room}
+                </TLink>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      {/* ---------------------------------------------------------------- Forge */}
+      <section className="forge" id="forge">
+        <div className="forge-grid">
+          <div className="atlas-wrap" aria-hidden="true">
+            <div className="atlas-fig">
+              <Greek name="atlas" />
+            </div>
+          </div>
+          <div>
+            <p className="inscr reveal">How tasks are forged</p>
+            <h2 className="display reveal">Atlas carries every task through the gate before you see it.</h2>
+            <p className="lede reveal">
+              A seed repository is mutated in your language, then held until it proves itself fair. Nothing reaches a
+              candidate on a model&apos;s word.
+            </p>
+            <ul className="gate reveal">
+              {[
+                ["Reference passes", "every test, three runs in a row"],
+                ["Starter fails", "at least one visible test"],
+                ["Statement checked", "it doesn't give the fix away"],
+                ["Algorithm stubs", "a blank answer fails most cases"],
+                ["Tests have teeth", "mutation score on the reference"],
+              ].map(([a, b]) => (
+                <li key={a}>
+                  <Tick /> <span className="text-[var(--text)]">{a}</span> <span className="text-[var(--text-2)]">{b}</span>
+                </li>
+              ))}
+            </ul>
+            <div className="tiers">
+              {(
+                [
+                  ["Novice", "ionic", "1-file bug fix, easy algorithm", "55%"],
+                  ["Adept", "corinthian", "2–3 file feature, medium, hints on", "75%"],
+                  ["Master", "column", "multi-file bug, speed budget, hard", "100%"],
+                ] as [string, GreekName, string, string][]
+              ).map(([t, art, d, h]) => (
+                <div key={t} className="tier-col">
+                  <div className="tier-art" style={{ height: h }}>
+                    <Greek name={art} ink />
+                  </div>
+                  <p className="display text-[30px]">{t}</p>
+                  <p className="text-[13px] leading-snug text-[var(--text-2)]">{d}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ---------------------------------------------------------------- Guides */}
+      <section className="guides" id="guides">
+        <div className="section-head reveal">
+          <p className="inscr">The pantheon</p>
+          <h2 className="display">Three AI helpers, each with one job and one rule.</h2>
+        </div>
+        <div className="guide-grid">
+          {GUIDES.map((g) => (
+            <article key={g.name} className="guide reveal">
+              <div className="guide-art">
+                <Greek name={g.art} />
+              </div>
+              <h3 className="display">{g.name}</h3>
+              <p className="inscr">{g.role}</p>
+              <p className="guide-body">{g.body}</p>
+              <p className="guide-rule">{g.rule}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      {/* ---------------------------------------------------------------- Rules */}
+      <section className="rules" id="rules">
+        <div className="aegis-wrap" aria-hidden="true">
+          <div className="aegis">
+            <Greek name="aegis" ink />
+          </div>
+        </div>
+        <div className="rules-in">
+          <div className="section-head reveal">
+            <p className="inscr">The laws</p>
+            <h2 className="display">Medusa&apos;s gaze can&apos;t be flattered. Neither can the grader.</h2>
+          </div>
+          <dl className="rule-grid">
+            {RULES.map(([t, d], i) => (
+              <div key={t} className="rule reveal">
+                <span className="display rule-n">{NUMERALS[i]}</span>
+                <dt>{t}</dt>
+                <dd>{d}</dd>
               </div>
             ))}
           </dl>
         </div>
       </section>
 
-      {/* Call to action and footer. */}
-      <section className="relative overflow-hidden border-t border-[var(--line)] px-[var(--gutter)] pt-24">
-        <div className="pointer-events-none absolute bottom-0 left-1/2 w-[min(1276px,100%)] -translate-x-1/2 opacity-[0.08]" aria-hidden="true">
-          <Engraving name="panorama" className="w-full" />
-          <div className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-[var(--parchment)] to-transparent" />
+      {/* ---------------------------------------------------------------- Practice */}
+      <section className="practice" id="practice">
+        <div className="practice-sea" aria-hidden="true">
+          <div className="ship">
+            <Greek name="ship" ink />
+          </div>
         </div>
-        <div className="relative mx-auto flex max-w-[1320px] flex-col items-start gap-8 md:flex-row md:items-end md:justify-between">
+        <div className="practice-in reveal">
           <div>
-            <h2 className="display text-[clamp(40px,5vw,72px)] leading-[1]">See it with a real portfolio.</h2>
-            <p className="mt-4 max-w-[520px] text-[16px] leading-relaxed text-[var(--text-2)]">
-              Upload one, or try a practice problem first. About ninety minutes from upload to report.
-            </p>
+            <p className="inscr">Before the voyage</p>
+            <h2 className="display">Practise first, no sign-up.</h2>
           </div>
-          <div className="flex flex-wrap gap-3">
-            <Btn href="/ascend">Start with a portfolio</Btn>
-            <Link href="/practice" className="btn btn-ghost">
-              <span className="btn-label">
-                <span>Try a practice problem</span>
-                <span aria-hidden="true">Try a practice problem</span>
-              </span>
-            </Link>
+          <div>
+            <p className="lede">
+              A problem list with a full editor: run with your own input, then submit against hidden cases in Python or
+              JavaScript. Practice problems never appear in an assessment.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Link href="/practice" className="btn">
+                <span className="btn-label">
+                  <span>Open practice</span>
+                  <span aria-hidden="true">Open practice</span>
+                </span>
+              </Link>
+            </div>
           </div>
         </div>
-        <footer className="relative mx-auto mt-24 flex max-w-[1320px] flex-wrap items-center justify-between gap-6 border-t border-[var(--line)] py-8 text-[13px] text-[var(--text-3)]">
-          <span className="display text-[22px] text-[var(--text)]">{BRAND}</span>
+      </section>
+
+      {/* ---------------------------------------------------------------- Finale */}
+      <section className="finale">
+        <div className="finale-in">
+          <h2 className="display finale-word">Ascend.</h2>
+          <p className="lede">Five rooms, about ninety minutes, one report you can recompute. Bring your scrolls.</p>
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <Btn href="/ascend">Start with a portfolio</Btn>
+          </div>
+        </div>
+        <div className="finale-temple" aria-hidden="true">
+          <Greek name="parthenon" ink />
+        </div>
+        <footer className="foot">
+          <span className="display text-[24px] text-[var(--text)]">{BRAND}</span>
           <nav className="flex flex-wrap gap-6">
             {[
-              ["/ascend", "Upload"],
-              ["/trials", "Assessment"],
-              ["/labyrinth", "Code reading"],
-              ["/oracle", "Interview"],
-              ["/verdict", "Report"],
+              ["/ascend", "Offering"],
+              ["/trials", "Trials"],
+              ["/labyrinth", "Labyrinth"],
+              ["/oracle", "Oracle"],
+              ["/verdict", "Verdict"],
             ].map(([href, label]) => (
               <TLink key={href} href={href} className="hover:text-[var(--text)]">
                 {label}
               </TLink>
             ))}
           </nav>
-          <span>HFT26 Team 41. Scores come from tests, never from a model.</span>
+          <span>Scores come from tests, never from a model.</span>
         </footer>
       </section>
     </div>
   );
 }
 
+// ---------------------------------------------------------------- pieces
+
 function K({ children }: { children: React.ReactNode }) {
   return <span className="text-[var(--ink)]">{children} </span>;
 }
 
 function Code({ children }: { children: React.ReactNode }) {
-  return <div className="mono rounded-xl bg-[var(--night)] p-4 text-[12.5px] leading-[1.8] text-[var(--text)]">{children}</div>;
+  return <div className="code">{children}</div>;
 }
 
 function Tick() {
@@ -368,39 +519,88 @@ function Tick() {
   );
 }
 
-function TopicBars() {
-  const topics: [string, number][] = [
-    ["arrays", 48],
-    ["hashing", 35],
-    ["two pointers", 22],
-    ["trees", 19],
-    ["sliding window", 14],
-  ];
+function rng(seed: number) {
+  return () => {
+    seed = (seed * 16807) % 2147483647;
+    return (seed - 1) / 2147483646;
+  };
+}
+
+const RING_TEXT =
+  "The candidate’s own work ✦ in their own stack ✦ checked before anyone sees it ✦ graded by tests alone ✦ re-graded to the byte ✦ ";
+
+/** Athena's halo: a turning astrolabe with an inscribed ring and constellations (from the showcase). */
+function Astrolabe() {
+  const { ticks, stars, lines } = useMemo(() => {
+    const r = rng(41);
+    const ticks = Array.from({ length: 360 }, (_, i) => {
+      const a = (i * Math.PI) / 180;
+      const len = i % 30 === 0 ? 26 : i % 5 === 0 ? 14 : 7;
+      return [470, 470, 470 - len, 470 - len].map((d, k) => +((k % 2 ? Math.sin(a) : Math.cos(a)) * d).toFixed(2));
+    });
+    const stars = Array.from({ length: 90 }, () => {
+      const a = r() * Math.PI * 2;
+      const d = 60 + Math.sqrt(r()) * 330;
+      return [+(Math.cos(a) * d).toFixed(1), +(Math.sin(a) * d).toFixed(1), +(0.7 + r() * 1.9).toFixed(2)];
+    });
+    const lines: string[] = [];
+    for (let k = 0; k < 9; k++) {
+      let cur = stars[Math.floor(r() * stars.length)];
+      let d = `M${cur[0].toFixed(1)} ${cur[1].toFixed(1)}`;
+      const used = new Set([cur]);
+      for (let s = 0; s < 3 + Math.floor(r() * 3); s++) {
+        const next = stars
+          .filter((p) => !used.has(p))
+          .sort((a, b) => Math.hypot(a[0] - cur[0], a[1] - cur[1]) - Math.hypot(b[0] - cur[0], b[1] - cur[1]))[0];
+        if (!next || Math.hypot(next[0] - cur[0], next[1] - cur[1]) > 120) break;
+        used.add(next);
+        cur = next;
+        d += ` L${cur[0].toFixed(1)} ${cur[1].toFixed(1)}`;
+      }
+      lines.push(d);
+    }
+    return { ticks, stars, lines };
+  }, []);
+
   return (
-    <div className="grid gap-6 sm:grid-cols-[1fr_1.2fr]">
-      <ul className="space-y-2 text-[13px]">
-        {[
-          ["Résumé", "2 pages, 3 projects"],
-          ["GitHub", "inventory-service, report-builder"],
-          ["Codeforces", "rating 1480"],
-        ].map(([k, v]) => (
-          <li key={k} className="flex justify-between gap-4 border-b border-[var(--line)] pb-2">
-            <span className="text-[var(--text-3)]">{k}</span>
-            <span className="truncate">{v}</span>
-          </li>
+    <svg viewBox="-500 -500 1000 1000" className="astro">
+      <defs>
+        <path id="ring-path" d="M0,-428 a428,428 0 1,1 -0.1,0" />
+      </defs>
+      <g className="astro-spin">
+        <circle r="470" className="a-line" />
+        <circle r="404" className="a-line" />
+        <circle r="452" className="a-line a-faint" />
+        {ticks.map(([x1, y1, x2, y2], i) => (
+          <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} className="a-tick" />
         ))}
-      </ul>
-      <div className="space-y-2">
-        {topics.map(([t, n]) => (
-          <div key={t} className="grid grid-cols-[110px_1fr_28px] items-center gap-3 text-[12.5px]">
-            <span className="text-[var(--text-2)]">{t}</span>
-            <span className="h-1.5 rounded-full bg-[var(--parchment-3)]">
-              <span className="block h-1.5 rounded-full bg-[var(--ink)]" style={{ width: `${(n / 48) * 100}%` }} />
-            </span>
-            <span className="mono text-right text-[var(--text-3)]">{n}</span>
-          </div>
+        <text className="a-text">
+          <textPath href="#ring-path">{RING_TEXT + RING_TEXT}</textPath>
+        </text>
+      </g>
+      <g className="astro-spin-rev">
+        <circle r="330" className="a-line a-dash" />
+        <circle r="210" className="a-line a-faint" />
+        {Array.from({ length: 12 }, (_, i) => {
+          const a = (i * Math.PI) / 6;
+          return (
+            <line
+              key={i}
+              x1={+(Math.cos(a) * 210).toFixed(2)}
+              y1={+(Math.sin(a) * 210).toFixed(2)}
+              x2={+(Math.cos(a) * 404).toFixed(2)}
+              y2={+(Math.sin(a) * 404).toFixed(2)}
+              className="a-line a-faint"
+            />
+          );
+        })}
+        {lines.map((d, i) => (
+          <path key={i} d={d} className="a-const" />
         ))}
-      </div>
-    </div>
+        {stars.map(([x, y, s], i) => (
+          <circle key={i} cx={x} cy={y} r={s} className="a-star" />
+        ))}
+      </g>
+    </svg>
   );
 }
