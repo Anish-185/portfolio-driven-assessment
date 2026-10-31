@@ -45,9 +45,10 @@ export function SiteNav() {
         <Logo />
         <ul className="hidden items-center gap-9 text-[14px] text-[var(--text-2)] md:flex">
           {[
-            ["#how", "How it works"],
-            ["#features", "Features"],
-            ["#rules", "Scoring rules"],
+            ["#journey", "The journey"],
+            ["#forge", "How it's forged"],
+            ["#guides", "AI helpers"],
+            ["#rules", "The laws"],
             ["/practice", "Practice"],
           ].map(([href, label]) => (
             <li key={href}>
