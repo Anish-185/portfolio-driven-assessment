@@ -38,9 +38,13 @@ Areté turns a candidate's own record (résumé, GitHub, LeetCode and Codeforces
 decide correctness, never a language model, and the candidate's code runs only in
 locked-down sandboxes.
 
+### 🎬 Watch the 40-second video (▶ press play, sound on)
+
+https://github.com/user-attachments/assets/97871b3d-1ba0-45cf-9683-e3b0f55890ca
+
 <div align="center">
-  <a href="docs/video/arete-40s.mp4"><img src="docs/images/video-poster.jpg" alt="Watch the 40-second Areté video" width="90%"></a>
-  <br><sub>🎬 <a href="docs/video/arete-40s.mp4"><b>Watch the 40-second video</b></a> (with sound): portfolio → gate → sandboxed trial → AI helpers → verdict</sub>
+  <sub>Portfolio → gate → sandboxed trial → AI helpers → verdict.
+  Player not showing? <a href="docs/video/arete-40s.mp4">Open the video file</a>.</sub>
 </div>
 
 > [!NOTE]
