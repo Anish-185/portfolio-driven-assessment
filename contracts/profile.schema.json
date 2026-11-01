@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/ROG-user-0987/HFT26-TEAM-41/contracts/profile.schema.json",
+  "$id": "https://github.com/Anish-185/portfolio-driven-assessment/contracts/profile.schema.json",
   "title": "Profile",
   "description": "What backend/profiler reads from a portfolio: the stack and concepts the domain task is built from, and the DSA topics each tier may use. Computed by deterministic rules; an LLM fills a field only when the rules find nothing (see `sources`).",
   "type": "object",

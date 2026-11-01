@@ -1,8 +1,7 @@
 "use client";
 
-// The AI voice interview after a submitted session (F5). Ported from the showcase's
-// interview room (showcase/components/interview/Interview.tsx: consent, orb, live
-// transcript, timer, typed fallback), with its scripted plan replaced by the backend:
+// The AI voice interview after a submitted session (F5): consent, orb, live transcript,
+// timer and typed fallback, with the questions decided by the backend:
 // POST /interviews/{id}/start and /turn decide what is said, and the interviewer's voice
 // is Featherless TTS through the backend (browser voice as fallback). Never scored.
 import { useEffect, useRef, useState } from "react";
@@ -86,7 +85,7 @@ export default function Interview({ sessionId }: { sessionId: string }) {
     setTurns((t) => [...t, turn]);
   };
 
-  // ---- listening (same loop as the showcase) ----
+  // ---- listening (same loop as the prototype) ----
 
   const startRec = () => {
     r.recWanted = true;

@@ -1,5 +1,5 @@
-/* AI interview room (F5). Ported from showcase/app/interview/interview.css (same rules),
-   with the showcase tokens and helper classes it relies on, scoped under .iv so the rest
+/* AI interview room (F5). Ported from the prototype's interview room (same rules),
+   with the prototype's tokens and helper classes it relies on, scoped under .iv so the rest
    of the app is unaffected. */
 .iv {
   --paper: #f3eee3;
@@ -102,7 +102,7 @@
   background: radial-gradient(circle at 42% 38%, #c8d4ff 0, #2442c9 22%, #0a1034 34%, transparent 35%);
 }
 
-/* ---------- from the showcase ---------- */
+/* ---------- from the prototype ---------- */
 
 
 .iv-top {

@@ -1,141 +1,162 @@
-# 🚀 CBIT Hacktoberfest '26 — Project Starter Repository
+# Areté
 
-> **Official Public Starter Repository for CBIT Hacktoberfest '26**  
-> *Chaitanya Bharathi Institute of Technology (CBIT), Hyderabad*
+**Portfolio-Driven Adaptive Coding & Technical Assessment Platform**
 
----
+Areté turns a candidate's own record (résumé, GitHub, LeetCode and Codeforces) into a
+validated 60-minute coding assessment in their own domain and tech stack. Tests decide
+correctness, never a language model, and the candidate's code runs only in locked-down
+sandboxes.
 
-## 📋 Team Information
+![Areté landing page](docs/images/landing.jpg)
 
-| Attribute | Details |
-| :--- | :--- |
-| **Team Name** | **JL** |
-| **Team Number** | `TEAM-41` (`HFT26-TEAM-41`) |
-| **Registration ID** | `HFEST26-GLZMC5TB` |
-| **Problem Track** | **Track Selection in Progress** |
-| **Domain** | `General Track` |
-| **Team Leader** | Sriram aditya sai (sriramaditya996@gmail.com) |
-| **Institution** | CBIT |
+## Why
 
-### 👥 Team Members
+Generic coding tests ignore what a candidate has actually built, and AI coding tools
+make it hard to tell whether someone understands the work in their portfolio. A
+LeetCode medium says little about whether a person can find a bug in a FastAPI service.
+Areté builds the test from the candidate's portfolio instead: their stack, their
+domain, the concepts they claim and the DSA topics they have solved.
 
-| # | Name | Email | Institution |
-| :--- | :--- | :--- | :--- |
-| 1 | G Anish | anish.g1835@gmail.com | CBIT |
-| 2 | Faiz | syedfaizahmedbasha@gmail.com | CBIT |
+## How it works
 
----
+1. **Profile.** The portfolio becomes a profile (domain, runtime, concepts, tier) by
+   plain rules. A small model is called once, only when the rules can't place it.
+2. **Build.** Two tasks are built from tested seed repos and a DSA bank of about 100
+   problems:
+   - **Novice:** a one-file bug, injected by a LibCST mutation engine and kept only if
+     it breaks some tests, plus an easy DSA problem.
+   - **Adept:** a feature stubbed out across 2-3 files, plus a medium DSA problem.
+   - **Master:** a multi-file bug with a performance constraint, plus a medium or hard
+     DSA problem.
+3. **Gate.** Every task passes a validation gate before release: the reference
+   solution passes, the starter fails, and the statement doesn't leak the answer. Each
+   task gets a certificate.
+4. **Assess.** The candidate works in a browser IDE (bundled Monaco) with Run and
+   Submit. Code runs in fresh Docker containers with no network, CPU, memory, PID and
+   time limits, and a non-root user. Hidden tests run in their own sandbox.
+5. **Assist.** On Adept and Master, a guarded hint assistant gives graded hints, never
+   solutions. Using it efficiently counts for up to 20% of the score.
+6. **Report.** A deterministic score and band from test results and fixed formulas
+   (fail-to-pass, SWE-bench style). The same events and snapshots always give the same
+   score, and the Re-grade button proves it. The report also shows claim verification,
+   a progress timeline, hint ROI, integrity notes and a **Trail Map** replay of the
+   candidate's path through the code. None of these affect the score.
+7. **Interview.** An optional AI voice interviewer asks about the candidate's own
+   submitted changes. It needs mic consent, stores transcripts (not audio) and never
+   affects the score.
 
-## 🎯 Problem Statement
+The candidate journey also includes **practice mode** (a LeetCode-style problem list
+with a sandboxed IDE), the **Labyrinth** (code comprehension) and the **Oracle** (the
+interview).
 
-### **Portfolio-Driven Adaptive Coding & Technical Assessment Platform**
-*Domain:* **General Track**
+## Architecture
 
-Static coding tests ignore a candidate's background, and AI coding tools make it
-hard to tell whether candidates understand the work in their portfolio. We turn a
-candidate's structured JSON portfolio (projects, stack, skills, DSA topics solved)
-into a validated 60-minute assessment in their own domain and stack: one domain task
-and one DSA task, at a Novice, Adept or Master tier. Every task is checked before
-release (the reference passes, the starter fails), candidate code runs in isolated
-sandboxes, and grading is deterministic: tests decide correctness, never an LLM.
-Adept and Master tiers get a guarded AI assistant whose efficient use counts for up
-to 20% of the score, and the report shows task-wise metrics, pass rates and time.
+```
+ Browser (Next.js)                 Backend (FastAPI)                     Sandboxes
+ ─────────────────                 ─────────────────                     ─────────
+ Landing, journey  ───/api──▶  routes ─ profiler ─ builder ─ gate
+ Candidate IDE                  │          │                 │
+ Report, Trail Map              │          ▼                 ▼
+ Voice interview                │      backend/llm ──▶ Featherless (text + TTS)
+                                │      (cache, budget, token log)
+                                ▼
+                         Celery workers ──────────────▶ Docker runner containers
+                         (grading, auto-submit)          no network, resource limits
+                                │
+                     PostgreSQL 16 · Redis 7
+```
 
----
+| Layer | Tech |
+| --- | --- |
+| Backend | Python 3.11, FastAPI, Pydantic v2, SQLAlchemy 2 + Alembic, Celery + Redis, pytest |
+| Task building | LibCST mutation and feature-removal engines, seed repos, DSA bank with Python and JS harnesses |
+| LLM | OpenAI Python SDK against the Featherless API, wrapped with Instructor (JSON mode); model slots for generator, assistant, probe and interviewer; every response cached in Redis, with a hard spend cap |
+| Speech | Featherless text-to-speech for the interviewer's voice; the browser Web Speech API for listening |
+| Runner | Docker images per runtime (`runtimes/python311`, `runtimes/node20`) |
+| Frontend | Next.js (App Router), TypeScript, Tailwind, Monaco, React Flow, assistant-ui, GSAP |
+| Contracts | JSON Schemas in `contracts/` are the source of truth; Pydantic and TypeScript types are generated from them |
+| Database | PostgreSQL 16 |
 
-## 🛠️ Contribution & Submission Workflow
+### Design rules
 
-All teams must follow the official fork-and-pull-request workflow:
+- Language models never decide correctness or scores.
+- Reference solutions and hidden tests never leave the backend: not to the browser,
+  not into any model's context, not in any API response.
+- A run counts only if exactly the task's expected test IDs were collected, and the
+  candidate can edit only starter files outside tests and config.
+- Every model call sets `max_tokens` and a low temperature, is cached by input hash,
+  and is logged with its token count.
 
-1. **Fork this Repository**:
-   - One team member should click the **Fork** button at the top right to fork this upstream repository to your personal/team GitHub account.
-2. **Add Collaborators**:
-   - In your forked repository, navigate to **Settings > Collaborators** and invite all your registered team members.
-3. **Clone & Develop Locally**:
-   ```bash
-   git clone https://github.com/<your-username>/HFT26-TEAM-41.git
-   cd HFT26-TEAM-41
-   git checkout -b feature/prototype
-   ```
-4. **Commit & Push Regularly**:
-   - Make atomic, descriptive commits throughout the hackathon.
-   ```bash
-   git add .
-   git commit -m "feat: implement core solution architecture"
-   git push origin feature/prototype
-   ```
-5. **Open Pull Request (PR) for Final Submission**:
-   - When ready for evaluation, open a **Pull Request** from your fork's `main` branch back to this upstream repository's `main` branch.
-   - **PR Title Format**: `[SUBMISSION] TEAM-41 - JL - Track Selection in Progress`
-   - **PR Description Checklist**:
-     - 📌 Solution Overview & Approach
-     - 🏗️ Architecture & Tech Stack Details
-     - 🚀 Local Setup & Installation Instructions
-     - 🎥 Demo Video Link / Live Deployment URL
-     - 📸 Key Screenshots & Visuals
+## Getting started
 
----
+Requirements: Docker with Compose, and GNU Make.
 
-## 📁 Project Structure
+```bash
+cp .env.example .env          # add FEATHERLESS_API_KEY for the AI features
+make runtimes                 # build the sandbox images
+make up                       # postgres, redis, api, worker, beat, frontend
+make migrate                  # create the database tables
+```
 
-Our code lives in these folders at the root, instead of the starter's suggested `src/`:
+Then open:
+
+- http://localhost:3000: the Areté landing page and candidate journey
+- http://localhost:3000/practice: practice problems
+- http://localhost:8000/docs: the API
+
+To get a ready-made assessment session (the 60-minute timer starts immediately):
+
+```bash
+make seed-demo                # or: make seed-demo TIER=adept / TIER=master
+```
+
+It prints a session URL. Fix the bug, press Run, then Submit to see the report.
+
+The demo flow needs no API key. The hint assistant, task enrichment and voice
+interviewer need `FEATHERLESS_API_KEY`.
+
+### Commands
+
+| Command | What it does |
+| --- | --- |
+| `make up` / `make down` | Start or stop the stack |
+| `make migrate` | Apply database migrations |
+| `make seed-demo` | Build, validate and open a demo assessment |
+| `make test` | Backend tests (pytest, in the api container) |
+| `make test-docker` | Runner tests that start real sandbox containers |
+| `make e2e` | Headless Chromium drives the full demo flow and checks the scores |
+| `make lint` | Linters |
+| `make contracts` | Regenerate Pydantic and TypeScript types from the schemas |
+| `make mutate SEED=... CONCEPT=...` | List and validate bug candidates for a Novice task |
+| `make remove-feature SEED=... [CONCEPT=...]` | Stub a concept and validate an Adept task |
+| `make build-master` | Build a Master task with a performance constraint |
+| `make gate` | Run the validation gate on a task |
+| `make llm-smoke` / `make llm-usage` | Check each model slot; show token use and spend |
+
+## Project structure
 
 ```
 .
-├── backend/              # FastAPI API, Celery workers, LLM client, runner, tests
-├── frontend/             # Next.js app (recruiter, candidate IDE, report, interview)
-├── contracts/            # JSON Schemas shared by backend and frontend, with fixtures
-├── seeds/                # Hand-written, tested seed repos that tasks are built from
-├── dsa/                  # DSA problem bank, JSON test cases, runners per language
-├── runtimes/             # Dockerfiles for the sandboxed runner images
-├── sim/                  # Simulated candidate scripts
-├── docs/                 # Blueprint, build prompts, progress, interviewer spec
-├── README.md
-└── LICENSE               # MIT
+├── backend/      FastAPI app, profiler, task builders, gate, scoring, assistant,
+│                 report, trail map, interviewer, LLM client, runner, tests
+├── frontend/     Next.js app: landing and journey, candidate IDE, report, interview, practice
+├── contracts/    JSON Schemas (source of truth), fixtures, generated types
+├── seeds/        Hand-written seed repos with tests and concept maps
+├── dsa/          DSA problem bank and topic taxonomy (backend only)
+├── runtimes/     Dockerfiles for the sandbox images
+├── sim/          Simulated candidate scripts
+├── e2e/          Headless end-to-end demo test
+└── docs/         Blueprint, build prompts, progress, interviewer spec
 ```
 
----
+More detail: [docs/BLUEPRINT.md](docs/BLUEPRINT.md) (architecture, scoring, threat
+model) and [docs/INTERVIEWER.md](docs/INTERVIEWER.md) (voice interviewer).
 
-## 📌 Solution Overview
+## Credits
 
-*To be completed.*
+Open-source libraries, datasets and adapted methods are listed in
+[ATTRIBUTIONS.md](ATTRIBUTIONS.md).
 
-## 🏗️ Architecture & Tech Stack
+## License
 
-*To be completed.*
-
-## 🚀 Local Setup
-
-The platform is four parts that run side by side:
-
-| Part | Folder | What it is | Run it |
-| --- | --- | --- | --- |
-| Landing site | `showcase/` | Static site "Assay": overview, **Code reading** (`/comprehension`) and **AI mock interview** (`/interview`), both in the browser | `cd showcase && npm ci && npm run dev` (port 3001) |
-| Practice problems | `frontend/` + `backend/` | LeetCode-style problem list and Monaco editor (`/practice`); Run, custom input and Submit in a sandbox | `cp .env.example .env`, `make runtimes`, `make up`, `make migrate`; open http://localhost:3000/practice |
-| Assessment engine | `backend/`, `frontend/app/session`, `frontend/app/report` | Portfolio to validated 60-minute assessment, sandbox grading, report | `make seed-demo` prints a session URL |
-| Code comprehension app | `code-compr/` | Full code-reading app (GitHub task curation, rubric review, Prisma) | see `code-compr/.env.example`; `npm install`, `npm run db:push`, `npm run dev` (port 3002) |
-
-The landing site links to the practice app at `NEXT_PUBLIC_PRACTICE_URL`
-(default `http://localhost:3000/practice`), and the practice app's navigation links back
-to the landing site, the code-reading app and the AI interview through
-`NEXT_PUBLIC_SHOWCASE_URL` (default `http://localhost:3001`) and
-`NEXT_PUBLIC_CODE_READING_URL` (default `http://localhost:3002`). `coding-assessment/`, an earlier standalone
-prototype (Express, Judge0, MongoDB), is archived on the `archive/coding-assessment` branch;
-the practice mode in `frontend/` replaces it.
-The in-site AI interview is browser-only (Web Speech API, scripted questions); the
-model-backed interviewer in `docs/INTERVIEWER.md` is not built yet.
-
-## 🎥 Demo Video
-
-*To be completed.*
-
-## 📸 Screenshots
-
-*To be completed.*
-
----
-
-## ⚠️ Important Rules & Code of Conduct
-* **Upstream Protection**: Do not push directly to this repository's main branch. All evaluation will be conducted on your submitted Pull Request.
-* **Original Work**: All code submitted must be developed during the hackathon timeline. Open-source libraries and frameworks are welcomed with proper attribution.
-* **Code Freeze**: Final Pull Requests must be submitted before the designated hackathon submission deadline.
+[MIT](LICENSE)

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/ROG-user-0987/HFT26-TEAM-41/contracts/run_result.schema.json",
+  "$id": "https://github.com/Anish-185/portfolio-driven-assessment/contracts/run_result.schema.json",
   "title": "RunResult",
   "description": "Result of one sandboxed test run, as reported by a runner container.",
   "type": "object",

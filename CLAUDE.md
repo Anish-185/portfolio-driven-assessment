@@ -1,4 +1,4 @@
-# Portfolio-Driven Assessment Platform (HFT26 Team 41 · JL)
+# Areté: Portfolio-Driven Adaptive Coding & Technical Assessment Platform
 
 ## What we're building
 A platform that turns a candidate's JSON portfolio into a validated 60-minute
@@ -6,11 +6,10 @@ coding assessment (one domain task + one DSA task) in their own tech stack,
 runs it in sandboxes, offers a guarded AI assistant on Adept/Master tiers,
 an optional AI voice interviewer, and a deterministic performance report.
 
-Context files (the repo's docs/ folder is the single source of truth; the
-shared Claude doc is an older snapshot):
+Context files (the repo's docs/ folder is the single source of truth):
 - docs/BLUEPRINT.md — decisions, architecture, scoring, resources, plan
 - docs/BUILD_PROMPTS.md — every build prompt, in order
-- docs/PROGRESS.md — status table, decisions log, session log
+- docs/PROGRESS.md — status table, decisions log
 - docs/INTERVIEWER.md — AI voice interviewer spec
 
 ## Session protocol (every session)
@@ -21,8 +20,8 @@ Start:
 3. Create a branch named after the prompt (e.g. `p1-1-db-api`).
 End:
 1. Run the prompt's acceptance checks and show the output.
-2. Update the item's row in docs/PROGRESS.md and add a session-log row
-   (date, who, what was done, next step).
+2. Update the item's row in docs/PROGRESS.md (and the decisions log if a
+   choice was made).
 3. Commit with the prompt ID in the message (e.g. "P1.1 db and api").
 4. Push the branch to origin.
 5. Merge into main only when the checks pass; push main.
@@ -103,7 +102,7 @@ frontend/    Next.js app: app/practice (LeetCode-style problem list and
              summary, certificates, claim map, Recharts timeline, efficiency parts,
              integrity notes; Trail Map = TrailTab.tsx, React Flow; recruiter key in
              sessionStorage via RecruiterKey.tsx; Interview = InterviewTab.tsx),
-             app/interview/[id] (showcase interview room + OracleOrb, speech.ts TtsPlayer).
+             app/interview/[id] (interview room + OracleOrb, speech.ts TtsPlayer).
              components/ui/ (shadcn/ui Card, Badge, Tabs; lib/utils.ts cn),
              lib/api.ts (browser client, calls /api,
              rewritten to API_URL in next.config.ts), lib/telemetry.ts,
@@ -202,9 +201,6 @@ dsa/         DSA bank: one folder per problem (problem.json, problem.md,
              ~1/3 of problems are `"practice_only": true` (dsa_bank.practice_split,
              re-applied by the importer): practice mode shows only those,
              select_problem never picks them
-code-compr/  Faiz's code-reading app (Next.js + Prisma, port 3002); showcase/ is the
-             landing site (port 3001). coding-assessment/ is archived on the
-             archive/coding-assessment branch
 runtimes/    Dockerfiles per runtime
 sim/         simulated candidate scripts
 e2e/         `make e2e`: headless Chromium (Playwright image) drives the demo flow;
@@ -287,24 +283,12 @@ After adding a frontend dependency: `docker compose up -d --build -V frontend`
 Files created inside a container (e.g. a generated migration) are owned by
 root; fix with `docker compose run --rm --no-deps api chown -R $(id -u):$(id -g) /app`.
 
-## Team
-3 members: Sriram Aditya Sai (lead), G Anish, Faiz.
-Roles: A Execution (runner, sandbox, API, workers) · B Generation + AI and
-scoring · C Frontend + interviewer UI. Person-to-role mapping: TBD.
-
-## Repository and hackathon rules
-- Repo: github.com/ROG-user-0987/HFT26-TEAM-41, a fork of
-  cbitosc/HFT26-TEAM-41 (CBIT Hacktoberfest '26). Push only to the fork
-  (origin). Never push to the upstream cbitosc repo.
-- One feature branch per prompt; merge into the fork's main only after its
-  acceptance checks pass.
+## Repository rules
+- Repo: github.com/Anish-185/portfolio-driven-assessment.
+- One feature branch per prompt; merge into main only after its acceptance
+  checks pass.
 - Open-source libraries are allowed with attribution: add every new library,
   dataset, or borrowed method to ATTRIBUTIONS.md in the same change.
-- All code must be written during the hackathon.
-- Keep the Team Information section of README.md unchanged.
-- Final submission: a PR from the fork's main to upstream main titled
-  "[SUBMISSION] TEAM-41 - JL - <track name>", with solution overview,
-  architecture and tech stack, local setup, demo video link, screenshots.
 
 ## Interviewer rules
 - Never affects the final score.

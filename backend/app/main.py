@@ -4,7 +4,7 @@ from app.cache import check_redis
 from app.db import check_db
 from app.routes import hints, interviews, jobs, practice, profiles, report, scores, sessions, trail
 
-app = FastAPI(title="HFT26 Team 41 API")
+app = FastAPI(title="Areté API")
 app.include_router(sessions.router)
 app.include_router(jobs.router)
 app.include_router(scores.router)

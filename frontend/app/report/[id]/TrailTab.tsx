@@ -2,7 +2,7 @@
 
 // Trail Map (F4): the task's functions grouped by file (React Flow), the candidate's path
 // through them replayed with a scrubber, dwell as heat, and report-only metric cards.
-// Layout idea from showcase/components/TrailMap.tsx; the data comes from GET .../trail.
+// The data comes from GET .../trail.
 import { Background, Controls, MarkerType, Position, ReactFlow, type Edge, type Node } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { useEffect, useMemo, useState } from "react";

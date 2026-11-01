@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/ROG-user-0987/HFT26-TEAM-41/contracts/candidate_task_view.schema.json",
+  "$id": "https://github.com/Anish-185/portfolio-driven-assessment/contracts/candidate_task_view.schema.json",
   "title": "CandidateTaskView",
   "description": "The part of a TaskSpec the browser may see. Every field here exists in TaskSpec with the same meaning. Never add reference_ref, target_symbols, hidden_tests, hidden DSA cases, certificate or random_seeds.",
   "type": "object",

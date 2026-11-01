@@ -1,6 +1,6 @@
-// Cuts single engravings out of the team's asset sheets into public/greek/ for the landing
-// page. Same method as showcase/scripts/cut-greek.mjs, plus the larger figures the landing
-// uses (Atlas, Nike, Poseidon, Apollo, Hermes in flight, the lion and two scenes).
+// Cuts single engravings out of the asset sheets into public/greek/ for the landing
+// page, including the larger figures (Atlas, Nike, Poseidon, Apollo, Hermes in flight,
+// the lion and two scenes).
 //   node scripts/cut-greek.mjs [sheet dir, default ~/greek]
 // Each asset gives two files:
 //   <name>.webp      parchment cutout: ink on paper, opaque inside the figure's

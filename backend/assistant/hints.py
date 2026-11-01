@@ -48,7 +48,7 @@ HINT_MAX_TOKENS = 300
 HINT_TEMPERATURE = 0.2
 MAX_QUESTION_CHARS = 1000
 OUTPUT_LINES = 40
-# Same trimming as code-compr's assistant (src/lib/llm.ts): per file, then in total.
+# Trimmed per file, then in total.
 FILE_CHARS = 4000
 FILES_CHARS = 14_000
 STATEMENT_CHARS = 3000
@@ -205,7 +205,7 @@ def _target_paths(spec: TaskSpec) -> list[str]:
 
 
 def nearby_files(spec: TaskSpec, files: dict[str, str]) -> dict[str, str]:
-    """Editable files holding the target, trimmed like code-compr (per file, then total)."""
+    """Editable files holding the target, trimmed per file, then in total."""
     out: dict[str, str] = {}
     budget = FILES_CHARS
     for path in _target_paths(spec):

@@ -74,9 +74,6 @@ services:
       API_URL: http://api:8000
       WATCHPACK_POLLING: "true"
       NEXT_TELEMETRY_DISABLED: "1"
-      # Nav links to the other parts of the platform (frontend/lib/site.ts).
-      NEXT_PUBLIC_SHOWCASE_URL: ${NEXT_PUBLIC_SHOWCASE_URL:-http://localhost:3001}
-      NEXT_PUBLIC_CODE_READING_URL: ${NEXT_PUBLIC_CODE_READING_URL:-http://localhost:3002}
     volumes:
       - ./frontend:/app
       - ./contracts:/contracts:ro

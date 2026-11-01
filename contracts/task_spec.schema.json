@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/ROG-user-0987/HFT26-TEAM-41/contracts/task_spec.schema.json",
+  "$id": "https://github.com/Anish-185/portfolio-driven-assessment/contracts/task_spec.schema.json",
   "title": "TaskSpec",
   "description": "Full specification of one assessment task. BACKEND ONLY: contains the reference solution pointer, hidden tests and certificate. The browser gets CandidateTaskView instead.",
   "type": "object",

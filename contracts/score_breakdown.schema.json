@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/ROG-user-0987/HFT26-TEAM-41/contracts/score_breakdown.schema.json",
+  "$id": "https://github.com/Anish-185/portfolio-driven-assessment/contracts/score_breakdown.schema.json",
   "title": "ScoreBreakdown",
   "description": "A session's score, computed by backend/scoring from stored runs and events only (no LLM). Stored in scores.breakdown and shown on the report. Holds counts and rates only: no test names, output or other hidden-test data. The same stored records always give the same breakdown.",
   "type": "object",

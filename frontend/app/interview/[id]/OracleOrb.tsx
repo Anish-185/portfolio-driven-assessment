@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 
-// Copied from showcase/components/OracleOrb.tsx (the interview orb); state is synced in an effect.
+// The interview orb; state is synced in an effect.
 
 // The oracle: one WebGL fragment shader. A porcelain sphere of domain-warped marble,
 // shaded with engraving hatch lines like the rest of the page, inside a corona of

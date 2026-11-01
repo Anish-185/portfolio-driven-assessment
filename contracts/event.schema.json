@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/ROG-user-0987/HFT26-TEAM-41/contracts/event.schema.json",
+  "$id": "https://github.com/Anish-185/portfolio-driven-assessment/contracts/event.schema.json",
   "title": "Event",
   "description": "One entry in a session's event trail. `type` selects the payload shape.",
   "oneOf": [

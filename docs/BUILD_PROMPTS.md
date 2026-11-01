@@ -36,7 +36,7 @@ Follow the session protocol in CLAUDE.md. Branch: p0-0-repo-setup.
    - Add placeholder sections, required for the final PR: Solution overview,
      Architecture and tech stack, Local setup, Demo video, Screenshots.
      Mark each "To be completed".
-2. LICENSE: MIT, copyright 2026 Team JL (HFT26-TEAM-41).
+2. LICENSE: MIT, with the project's copyright line.
 3. ATTRIBUTIONS.md: every open-source project, dataset, and method actually
    used so far plus those planned in docs/BLUEPRINT.md section 7, each with
    link and license, grouped as "Used as dependencies", "Methods we

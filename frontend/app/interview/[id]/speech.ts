@@ -2,7 +2,7 @@
 // Featherless TTS proxy (TtsPlayer; the browser voice is the fallback), Web Audio for the
 // level the orb follows (mic while listening, playback while speaking). Nothing is
 // recorded or uploaded by this code; Chrome's speech recognition itself may send audio to
-// Google, which the consent text says. Ported from showcase/components/interview/speech.ts.
+// Google, which the consent text says.
 
 type RecognitionResult = { isFinal: boolean; 0: { transcript: string } };
 

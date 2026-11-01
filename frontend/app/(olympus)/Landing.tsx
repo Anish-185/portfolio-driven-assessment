@@ -1,7 +1,7 @@
 "use client";
 
 // Landing: Areté as a set of engraved plates on the night stage. The hero is Athena under a
-// turning astrolabe with the name in front of her (from the showcase's Assay hero). Each
+// turning astrolabe with the name in front of her (from the prototype's Assay hero). Each
 // plate below shows one capability of the product with a small mock of its real UI, under
 // one engraving. Motion is scroll-driven only (parallax and reveals); no cursor effects.
 import Link from "next/link";
@@ -282,7 +282,7 @@ export default function Landing() {
               In the Eumenides, Athena ends a blood feud by founding the first court: evidence is heard, votes are counted,
               and nobody&apos;s anger decides. We built the same thing for code.
             </p>
-            <p className="inscr text-[var(--gold-bright)]">CBIT Hacktoberfest &apos;26, Team XLI</p>
+            <p className="inscr text-[var(--gold-bright)]">Areté, MMXXVI</p>
           </aside>
         </div>
       </section>
@@ -529,7 +529,7 @@ function rng(seed: number) {
 const RING_TEXT =
   "The candidate’s own work ✦ in their own stack ✦ checked before anyone sees it ✦ graded by tests alone ✦ re-graded to the byte ✦ ";
 
-/** Athena's halo: a turning astrolabe with an inscribed ring and constellations (from the showcase). */
+/** Athena's halo: a turning astrolabe with an inscribed ring and constellations. */
 function Astrolabe() {
   const { ticks, stars, lines } = useMemo(() => {
     const r = rng(41);

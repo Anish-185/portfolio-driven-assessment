@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/ROG-user-0987/HFT26-TEAM-41/contracts/portfolio.schema.json",
+  "$id": "https://github.com/Anish-185/portfolio-driven-assessment/contracts/portfolio.schema.json",
   "title": "Portfolio",
   "description": "A candidate portfolio. Compatible with the JSON Resume schema (https://jsonresume.org/schema): every valid portfolio is also a valid JSON Resume document. Adds the required `assessment` extension.",
   "type": "object",
