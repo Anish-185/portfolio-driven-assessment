@@ -38,6 +38,11 @@ Areté turns a candidate's own record (résumé, GitHub, LeetCode and Codeforces
 decide correctness, never a language model, and the candidate's code runs only in
 locked-down sandboxes.
 
+<div align="center">
+  <a href="docs/video/arete-40s.mp4"><img src="docs/images/video-poster.jpg" alt="Watch the 40-second Areté video" width="90%"></a>
+  <br><sub>🎬 <a href="docs/video/arete-40s.mp4"><b>Watch the 40-second video</b></a> (with sound): portfolio → gate → sandboxed trial → AI helpers → verdict</sub>
+</div>
+
 > [!NOTE]
 > **Why it exists.** Generic coding tests ignore what a candidate has actually built,
 > and AI coding tools make it hard to tell whether someone understands the work in
